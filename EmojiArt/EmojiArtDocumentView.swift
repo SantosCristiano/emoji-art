@@ -25,23 +25,20 @@ struct EmojiArtDocumentView: View {
             GeometryReader { geometry in
                 ZStack {
                     Color.white.overlay(
-                        Group {
-                            if self.document.backgroundImage != nil {
-                                Image(uiImage: self.document.backgroundImage!)
-                            }
-                        }
+                        OptionalImage(uiImage: self.document.backgroundImage)
                     )
-                        .edgesIgnoringSafeArea([.horizontal, .bottom])
-                        .onDrop(of: ["public.image", "public.text"], isTargeted: nil) { providers, location in
-                            var location = geometry.convert(location, from: .global)
-                            location = CGPoint(x: location.x - geometry.size.width/2, y: location.y - geometry.size.height/2)
-                            return self.drop(providers: providers, at: location)
-                        }
                     ForEach(self.document.emojis) { emoji in
                         Text(emoji.text)
                             .font(self.font(for: emoji))
                             .position(self.position(for: emoji, in: geometry.size))
                     }
+                }
+                .clipped()
+                .edgesIgnoringSafeArea([.horizontal, .bottom])
+                .onDrop(of: ["public.image", "public.text"], isTargeted: nil) { providers, location in
+                    var location = geometry.convert(location, from: .global)
+                    location = CGPoint(x: location.x - geometry.size.width/2, y: location.y - geometry.size.height/2)
+                    return self.drop(providers: providers, at: location)
                 }
             }
         }
